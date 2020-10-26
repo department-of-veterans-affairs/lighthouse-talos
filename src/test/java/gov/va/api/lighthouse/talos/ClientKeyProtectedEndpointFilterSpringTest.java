@@ -26,23 +26,26 @@ public class ClientKeyProtectedEndpointFilterSpringTest {
 
   @Test
   void filterApplied() {
-    ResponseEntity<String> testResponse = makeRequest("/fugazi/Patient/m3", "shanktopus");
+    ResponseEntity<FugaziRestController.FugaziResponse> testResponse =
+        makeRequest("/fugazi/Patient/m8", "shanktopus");
     assertThat(testResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(testResponse.getBody()).isEqualTo("hello m3");
+    assertThat(testResponse.getBody().message()).isEqualTo("Hello m8");
   }
 
   @SneakyThrows
-  ResponseEntity<String> makeRequest(String url, String clientKey) {
+  ResponseEntity<FugaziRestController.FugaziResponse> makeRequest(String url, String clientKey) {
     RequestEntity<Void> request =
         RequestEntity.get(new URI(url)).header("client-key", clientKey).build();
-    ResponseEntity<String> testResponse = restTemplate.exchange(request, String.class);
+    ResponseEntity<FugaziRestController.FugaziResponse> testResponse =
+        restTemplate.exchange(request, FugaziRestController.FugaziResponse.class);
     return testResponse;
   }
 
   @Test
   void unauthorized() {
-    ResponseEntity<String> testResponse = makeRequest("/fugazi/Patient/m3", "BIG-oof");
+    ResponseEntity<FugaziRestController.FugaziResponse> testResponse =
+        makeRequest("/fugazi/Patient/401", "BIG-oof");
     assertThat(testResponse.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-    assertThat(testResponse.getBody()).isEqualTo("{\"message\":\"NOPE\"}");
+    assertThat(testResponse.getBody().error()).isEqualTo("Unauthorized");
   }
 }

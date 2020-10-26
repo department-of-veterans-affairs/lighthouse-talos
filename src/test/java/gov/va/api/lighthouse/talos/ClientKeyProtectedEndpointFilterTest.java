@@ -25,36 +25,16 @@ public class ClientKeyProtectedEndpointFilterTest {
 
   private ClientKeyProtectedEndpointFilter filter() {
     return ClientKeyProtectedEndpointFilter.builder()
-        .clientKeyPair(
-            ClientKeyProtectedEndpointFilter.ClientKeyPair.builder()
-                .urlPattern(".*/client-key")
-                .clientKeys(List.of("key1", "key3"))
-                .build())
-        .clientKeyPair(
-            ClientKeyProtectedEndpointFilter.ClientKeyPair.builder()
-                .urlPattern(".*/client-key-too")
-                .clientKeys(List.of("key2"))
-                .build())
-        .unauthorizedResponseString("{\"message\":\"Not Today Satan!\"}")
+        .clientKeys(List.of("key1", "key3"))
+        .unauthorizedResponse(ClientKeyProtectedEndpointFilter::standardUnauthorizedMessage)
         .build();
-  }
-
-  @Test
-  @SneakyThrows
-  void filterAppliedWhenNoUrlMatch() {
-    when(request.getRequestURI()).thenReturn("/fugazi/noop");
-    filter().doFilterInternal(request, response, filterChain);
-    verify(filterChain).doFilter(request, response);
-    verifyNoInteractions(response);
   }
 
   @ParameterizedTest
   @ValueSource(strings = {"key1", "key3"})
   @SneakyThrows
   void filterAppliedWhenUrlAndKeyAreCorrect(String clientKey) {
-    when(request.getRequestURI()).thenReturn("/fugazi/client-key");
-    when(request.getHeader(ClientKeyProtectedEndpointFilter.CLIENT_KEY_HEADER))
-        .thenReturn(clientKey);
+    when(request.getHeader("client-key")).thenReturn(clientKey);
     filter().doFilterInternal(request, response, filterChain);
     verifyNoInteractions(response);
     verify(filterChain).doFilter(request, response);
@@ -65,10 +45,8 @@ public class ClientKeyProtectedEndpointFilterTest {
   @ValueSource(strings = {"KEY1", "key2", "kEy3", " key1 ", "", "   "})
   @SneakyThrows
   void filterResponse401WhenClientKeyDoesntMatch(String keyValue) {
-    when(request.getRequestURI()).thenReturn("/fugazi/client-key");
     when(request.getRequestURL()).thenReturn(new StringBuffer("Saaad!"));
-    when(request.getHeader(ClientKeyProtectedEndpointFilter.CLIENT_KEY_HEADER))
-        .thenReturn(keyValue);
+    when(request.getHeader("client-key")).thenReturn(keyValue);
     when(response.getOutputStream()).thenReturn(mock(ServletOutputStream.class));
     filter().doFilterInternal(request, response, filterChain);
     verifyNoInteractions(filterChain);
@@ -78,9 +56,8 @@ public class ClientKeyProtectedEndpointFilterTest {
   @Test
   @SneakyThrows
   void filterResponse401WhenClientKeyIsNull() {
-    when(request.getRequestURI()).thenReturn("/fugazi/client-key");
     when(request.getRequestURL()).thenReturn(new StringBuffer("Saaad!"));
-    when(request.getHeader(ClientKeyProtectedEndpointFilter.CLIENT_KEY_HEADER)).thenReturn(null);
+    when(request.getHeader("client-key")).thenReturn(null);
     when(response.getOutputStream()).thenReturn(mock(ServletOutputStream.class));
     filter().doFilterInternal(request, response, filterChain);
     verifyNoInteractions(filterChain);
