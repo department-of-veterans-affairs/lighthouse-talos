@@ -2,45 +2,37 @@ package gov.va.api.lighthouse.talos;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Consumer;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Singular;
 import lombok.SneakyThrows;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Slf4j
-@Value
-@EqualsAndHashCode(callSuper = false)
 @Builder
+@Getter
 public class ClientKeyProtectedEndpointFilter extends OncePerRequestFilter {
-  @Builder.Default String clientKeyHeader = "client-key";
+  @Builder.Default private final String clientKeyHeader = "client-key";
 
-  List<String> clientKeys;
+  @Singular private final List<String> clientKeys;
 
-  @NonNull Consumer<HttpServletResponse> unauthorizedResponse;
+  @NonNull private final Consumer<HttpServletResponse> unauthorizedResponse;
 
-  @Builder.Default String name = "Client key protected endpoint";
+  @Builder.Default private final String name = "Client key protected endpoint";
 
-  /**
-   * A super basic 401 Unauthorized response message.
-   *
-   * <p>Status Code: 401 Content-Type: application/json {"message": "UNAUTHORIZED"}
-   */
-  @SneakyThrows
-  public static void standardUnauthorizedMessage(HttpServletResponse response) {
-    response.setStatus(401);
-    response.setContentType("application/json");
-    response
-        .getOutputStream()
-        .write("{\"message\":\"UNAUTHORIZED\"}".getBytes(StandardCharsets.UTF_8));
+  /** Immutable set of client keys. */
+  List<String> clientKeys() {
+    if (clientKeys == null) {
+      return List.of();
+    }
+    return clientKeys;
   }
 
   @Override
@@ -52,7 +44,7 @@ public class ClientKeyProtectedEndpointFilter extends OncePerRequestFilter {
     String key = request.getHeader(clientKeyHeader());
     if (isBlank(key) || !clientKeys().contains(key)) {
       log.error("Rejecting request {} ({})", name(), clientKeyHeader());
-      unauthorizedResponse.accept(response);
+      unauthorizedResponse().accept(response);
       return;
     }
     filterChain.doFilter(request, response);

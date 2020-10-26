@@ -1,9 +1,10 @@
-package gov.va.api.lighthouse.talos;
+package gov.va.api.lighthouse.talos.fugazi;
+
+import static gov.va.api.lighthouse.talos.Responses.unauthorizedAsJson;
 
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
-import java.nio.charset.StandardCharsets;
+import gov.va.api.lighthouse.talos.ClientKeyProtectedEndpointFilter;
 import java.util.List;
-import javax.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -20,20 +21,16 @@ public class FugaziConfig {
         ClientKeyProtectedEndpointFilter.builder()
             .clientKeyHeader("shanktokey")
             .clientKeys(List.of("shanktopus"))
-            .unauthorizedResponse(this::unauthorizedResponse)
+            .unauthorizedResponse(unauthorizedAsJson(unauthorizedPayload()))
             .build());
     protectedEndpoint.addUrlPatterns("/fugazi/Patient/*");
     return protectedEndpoint;
   }
 
   @SneakyThrows
-  private void unauthorizedResponse(HttpServletResponse response) {
-    var message =
-        JacksonConfig.createMapper()
-            .writeValueAsString(
-                FugaziRestController.FugaziResponse.builder().error("Unauthorized").build());
-    response.setStatus(401);
-    response.addHeader("Content-Type", "application/json");
-    response.getOutputStream().write(message.getBytes(StandardCharsets.UTF_8));
+  private String unauthorizedPayload() {
+    return JacksonConfig.createMapper()
+        .writeValueAsString(
+            FugaziRestController.FugaziResponse.builder().error("Unauthorized").build());
   }
 }

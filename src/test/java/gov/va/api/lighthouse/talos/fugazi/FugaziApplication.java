@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.talos;
+package gov.va.api.lighthouse.talos.fugazi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

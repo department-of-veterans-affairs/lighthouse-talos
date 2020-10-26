@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.talos;
+package gov.va.api.lighthouse.talos.fugazi;
 
 import lombok.Builder;
 import lombok.Value;

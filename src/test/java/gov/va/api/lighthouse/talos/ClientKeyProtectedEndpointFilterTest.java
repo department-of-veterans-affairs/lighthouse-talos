@@ -23,10 +23,25 @@ public class ClientKeyProtectedEndpointFilterTest {
 
   FilterChain filterChain = mock(FilterChain.class);
 
+  @Test
+  @SneakyThrows
+  void allRequestsAreRejectedWhenNoKeysAreConfigured() {
+    var filter =
+        ClientKeyProtectedEndpointFilter.builder()
+            .unauthorizedResponse(Responses::standardUnauthorizedMessage)
+            .build();
+    when(request.getRequestURL()).thenReturn(new StringBuffer("Saaad!"));
+    when(request.getHeader("client-key")).thenReturn("admit-one");
+    when(response.getOutputStream()).thenReturn(mock(ServletOutputStream.class));
+    filter.doFilterInternal(request, response, filterChain);
+    verifyNoInteractions(filterChain);
+    verify(response).setStatus(401);
+  }
+
   private ClientKeyProtectedEndpointFilter filter() {
     return ClientKeyProtectedEndpointFilter.builder()
         .clientKeys(List.of("key1", "key3"))
-        .unauthorizedResponse(ClientKeyProtectedEndpointFilter::standardUnauthorizedMessage)
+        .unauthorizedResponse(Responses::standardUnauthorizedMessage)
         .build();
   }
 
