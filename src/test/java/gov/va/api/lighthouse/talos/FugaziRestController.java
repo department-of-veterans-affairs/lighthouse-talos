@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class FugaziRestController {
 
-    @GetMapping("/fugazi/Patient/{id}")
-    String hello(@PathVariable(name = "id", required = false) String id) {
-        return "hello " + id;
-    }
+  @GetMapping("/fugazi/Patient/{id}")
+  String hello(@PathVariable(name = "id", required = false) String id) {
+    return "hello " + id;
+  }
 }

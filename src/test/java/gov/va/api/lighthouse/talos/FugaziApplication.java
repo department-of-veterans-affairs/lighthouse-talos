@@ -8,8 +8,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAsync
 public class FugaziApplication {
 
-    /** The required main for Spring Boot applications. */
-    public static void main(String[] args) {
-        SpringApplication.run(FugaziApplication.class, args);
-    }
+  /** The required main for Spring Boot applications. */
+  public static void main(String[] args) {
+    SpringApplication.run(FugaziApplication.class, args);
+  }
 }
