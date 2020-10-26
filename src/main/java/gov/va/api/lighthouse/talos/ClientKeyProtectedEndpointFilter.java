@@ -4,7 +4,8 @@ import static gov.va.api.health.autoconfig.logging.LogSanitizer.sanitize;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Objects;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,11 +31,21 @@ public class ClientKeyProtectedEndpointFilter extends OncePerRequestFilter {
   @SuppressWarnings("JdkObsolete")
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
-    boolean clientKeyIsValid =
+    List<String> matchingKeyPairs =
         clientKeyPairs.stream()
-            .filter(kp -> request.getRequestURI().matches(kp.urlPattern()))
-            .anyMatch(
-                kp -> hasValidClientKey(kp.clientKeys(), request.getHeader(CLIENT_KEY_HEADER)));
+            .filter(kp -> Pattern.compile(kp.urlPattern).matcher(request.getRequestURI()).matches())
+            .flatMap(kp -> kp.clientKeys().stream())
+            .collect(Collectors.toList());
+
+    if (matchingKeyPairs.isEmpty()) {
+      filterChain.doFilter(request, response);
+      return;
+    }
+
+    String clientKeyHeader = request.getHeader(CLIENT_KEY_HEADER);
+    boolean clientKeyIsValid =
+        clientKeyHeader != null
+            && matchingKeyPairs.stream().anyMatch(key -> key.equals(clientKeyHeader));
 
     if (clientKeyIsValid) {
       filterChain.doFilter(request, response);
@@ -46,13 +57,6 @@ public class ClientKeyProtectedEndpointFilter extends OncePerRequestFilter {
     response.setStatus(401);
     response.setContentType("application/json");
     response.getOutputStream().write(unauthorizedResponseString.getBytes(StandardCharsets.UTF_8));
-  }
-
-  private boolean hasValidClientKey(List<String> allowedKeys, String requestKey) {
-    if (requestKey == null) {
-      return false;
-    }
-    return allowedKeys.stream().filter(Objects::nonNull).anyMatch(requestKey::equals);
   }
 
   /** One to many mapping of Client-Keys and Url Patterns. */
