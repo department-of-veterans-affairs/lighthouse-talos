@@ -1,10 +1,9 @@
 package gov.va.api.lighthouse.talos;
 
-import static gov.va.api.health.autoconfig.logging.LogSanitizer.sanitize;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +27,8 @@ public class ClientKeyProtectedEndpointFilter extends OncePerRequestFilter {
 
   @NonNull Consumer<HttpServletResponse> unauthorizedResponse;
 
+  @Builder.Default String name = "Client key protected endpoint";
+
   /**
    * A super basic 401 Unauthorized response message.
    *
@@ -44,24 +45,16 @@ public class ClientKeyProtectedEndpointFilter extends OncePerRequestFilter {
 
   @Override
   @SneakyThrows
-  // getRequestUrl() returns a StringBuffer, errorprone wants a StringBuilder
+  /* getRequestUrl() returns a StringBuffer, errorprone wants a StringBuilder */
   @SuppressWarnings("JdkObsolete")
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
-    String clientKeyHeader = request.getHeader(clientKeyHeader());
-    boolean clientKeyIsValid =
-        clientKeyHeader != null
-            && clientKeys().stream().filter(Objects::nonNull).anyMatch(clientKeyHeader::equals);
-
-    if (clientKeyIsValid) {
-      filterChain.doFilter(request, response);
+    String key = request.getHeader(clientKeyHeader());
+    if (isBlank(key) || !clientKeys().contains(key)) {
+      log.error("Rejecting request {} ({})", name(), clientKeyHeader());
+      unauthorizedResponse.accept(response);
       return;
     }
-
-    log.error(
-        "Client Key ({}) is invalid for request {}",
-        sanitize(clientKeyHeader),
-        sanitize(request.getRequestURL().toString()));
-    unauthorizedResponse.accept(response);
+    filterChain.doFilter(request, response);
   }
 }
