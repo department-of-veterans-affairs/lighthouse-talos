@@ -35,7 +35,7 @@ public class ClientKeyProtectedEndpointFilterSpringTest {
   @SneakyThrows
   ResponseEntity<FugaziRestController.FugaziResponse> makeRequest(String url, String clientKey) {
     RequestEntity<Void> request =
-        RequestEntity.get(new URI(url)).header("client-key", clientKey).build();
+        RequestEntity.get(new URI(url)).header("shanktokey", clientKey).build();
     ResponseEntity<FugaziRestController.FugaziResponse> testResponse =
         restTemplate.exchange(request, FugaziRestController.FugaziResponse.class);
     return testResponse;

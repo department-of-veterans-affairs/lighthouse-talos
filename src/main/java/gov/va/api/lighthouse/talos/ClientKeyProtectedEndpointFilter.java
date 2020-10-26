@@ -4,12 +4,14 @@ import static gov.va.api.health.autoconfig.logging.LogSanitizer.sanitize;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +26,7 @@ public class ClientKeyProtectedEndpointFilter extends OncePerRequestFilter {
 
   List<String> clientKeys;
 
-  Consumer<HttpServletResponse> unauthorizedResponse;
+  @NonNull Consumer<HttpServletResponse> unauthorizedResponse;
 
   /**
    * A super basic 401 Unauthorized response message.
@@ -48,7 +50,8 @@ public class ClientKeyProtectedEndpointFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
     String clientKeyHeader = request.getHeader(clientKeyHeader());
     boolean clientKeyIsValid =
-        clientKeyHeader != null && clientKeys().stream().anyMatch(clientKeyHeader::equals);
+        clientKeyHeader != null
+            && clientKeys().stream().filter(Objects::nonNull).anyMatch(clientKeyHeader::equals);
 
     if (clientKeyIsValid) {
       filterChain.doFilter(request, response);

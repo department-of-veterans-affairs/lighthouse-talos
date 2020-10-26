@@ -18,6 +18,7 @@ public class FugaziConfig {
 
     protectedEndpoint.setFilter(
         ClientKeyProtectedEndpointFilter.builder()
+            .clientKeyHeader("shanktokey")
             .clientKeys(List.of("shanktopus"))
             .unauthorizedResponse(this::unauthorizedResponse)
             .build());
