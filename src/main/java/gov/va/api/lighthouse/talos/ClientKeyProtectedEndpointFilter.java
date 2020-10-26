@@ -37,8 +37,6 @@ public class ClientKeyProtectedEndpointFilter extends OncePerRequestFilter {
 
   @Override
   @SneakyThrows
-  /* getRequestUrl() returns a StringBuffer, errorprone wants a StringBuilder */
-  @SuppressWarnings("JdkObsolete")
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
     String key = request.getHeader(clientKeyHeader());
