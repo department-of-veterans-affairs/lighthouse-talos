@@ -19,7 +19,7 @@ list of valid tokens, the request will be rejected.
 
 ##### Configurable Attributes
 - clientKeyHeader  `OPTIONAL`
-    - Sets the name of the header where the filter expects the key value to exist
+    - The name of the header where the filter expects the key value to exist.
     - Default: `client-key`
 - clientKeys `REQUIRED`
     - A list of strings that represent the valid client-keys for the endpoint configured
