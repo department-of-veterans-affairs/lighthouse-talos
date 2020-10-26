@@ -27,6 +27,5 @@ list of valid tokens, the request will be rejected.
 - unauthorizedReponse `REQUIRED`
     - The configurable HttpServletResponse for an unauthorized/invalid client-key value.
 - name `OPTIONAL`
-  - The name of the endpoint. This will be logged as part of the message if a client-key
-  is invalid or unauthorized.
+  - The name of the endpoint. This will be logged if a client-key is invalid or unauthorized.
   - Default: `Client key protected endpoint`
