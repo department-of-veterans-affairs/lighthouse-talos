@@ -17,15 +17,5 @@ to specific endpoints in Spring applications. If an endpoint configured with thi
 filter receives a request containing a token header that does not match a value within the 
 list of valid tokens, the request will be rejected.
 
-##### Configurable Attributes
-- clientKeyHeader  `OPTIONAL`
-    - The name of the header where the filter expects the key value to exist.
-    - Default: `client-key`
-- clientKeys `REQUIRED`
-    - A list of strings that represent the valid client-keys for the endpoint configured
-    with this filter. 
-- unauthorizedReponse `REQUIRED`
-    - The configurable HttpServletResponse for an unauthorized/invalid client-key value.
-- name `OPTIONAL`
-  - The name of the endpoint. This will be logged if a client-key is invalid or unauthorized.
-  - Default: `Client key protected endpoint`
+Available configurations for this filter can be found 
+[here](./src/main/java/gov/va/api/lighthouse/talos/ClientKeyProtectedEndpointFilter.java).
