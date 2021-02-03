@@ -48,21 +48,17 @@ public class AppliedFiltersTest {
         makeRequest("/talos/fugazi/Patient/m8", "shanktopus");
     assertThat(r2.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(r2.getBody().message()).isEqualTo("Hello m8");
-
-    ResponseEntity<FugaziRestController.FugaziResponse> r3 =
-        makeRequest("/talos/fugazi/Patient/m8", "not-a-valid-key");
-    assertThat(r3.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
   }
 
   @Test
   void unauthorized() {
-    ResponseEntity<FugaziRestController.FugaziResponse> testResponse =
+    ResponseEntity<FugaziRestController.FugaziResponse> r1 =
         makeRequest("/fugazi/Patient/401", "BIG-oof");
-    assertThat(testResponse.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-    assertThat(testResponse.getBody().error()).isEqualTo("Unauthorized");
-    /* Assert fails for new path /talos/fugazi/Patient/401: response status is 200 OK instead of 401 Unauthorized.
-     *  The rewritten path gives 200 OK no matter if a client-key is given, client-key filter does not work
-     *  with the rewritten path!
-     * */
+    assertThat(r1.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    assertThat(r1.getBody().error()).isEqualTo("Unauthorized");
+
+    ResponseEntity<FugaziRestController.FugaziResponse> r2 =
+        makeRequest("/talos/fugazi/Patient/m8", "not-a-valid-key");
+    assertThat(r2.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
   }
 }
