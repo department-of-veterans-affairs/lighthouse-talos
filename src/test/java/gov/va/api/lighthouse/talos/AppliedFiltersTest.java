@@ -28,14 +28,6 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 public class AppliedFiltersTest {
   @Autowired TestRestTemplate restTemplate;
 
-  @Test
-  void filterApplied() {
-    ResponseEntity<FugaziRestController.FugaziResponse> testResponse =
-        makeRequest("/fugazi/Patient/m8", "shanktopus");
-    assertThat(testResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(testResponse.getBody().message()).isEqualTo("Hello m8");
-  }
-
   @SneakyThrows
   ResponseEntity<FugaziRestController.FugaziResponse> makeRequest(String url, String clientKey) {
     RequestEntity<Void> request =
@@ -46,10 +38,28 @@ public class AppliedFiltersTest {
   }
 
   @Test
+  void multipleFiltersApplied() {
+    ResponseEntity<FugaziRestController.FugaziResponse> r1 =
+        makeRequest("/fugazi/Patient/m8", "shanktopus");
+    assertThat(r1.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(r1.getBody().message()).isEqualTo("Hello m8");
+
+    ResponseEntity<FugaziRestController.FugaziResponse> r2 =
+        makeRequest("/talos/fugazi/Patient/m8", "shanktopus");
+    assertThat(r2.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(r2.getBody().message()).isEqualTo("Hello m8");
+  }
+
+  @Test
   void unauthorized() {
-    ResponseEntity<FugaziRestController.FugaziResponse> testResponse =
+    ResponseEntity<FugaziRestController.FugaziResponse> r1 =
         makeRequest("/fugazi/Patient/401", "BIG-oof");
-    assertThat(testResponse.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-    assertThat(testResponse.getBody().error()).isEqualTo("Unauthorized");
+    assertThat(r1.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    assertThat(r1.getBody().error()).isEqualTo("Unauthorized");
+
+    ResponseEntity<FugaziRestController.FugaziResponse> r2 =
+        makeRequest("/talos/fugazi/Patient/m8", "not-a-valid-key");
+    assertThat(r2.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    assertThat(r2.getBody().error()).isEqualTo("Unauthorized");
   }
 }
