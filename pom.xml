@@ -24,5 +24,11 @@
       <version>${project.parent.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>gov.va.api.health</groupId>
+      <artifactId>service-auto-config</artifactId>
+      <version>7.0.20</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 </project>
