@@ -60,5 +60,6 @@ public class AppliedFiltersTest {
     ResponseEntity<FugaziRestController.FugaziResponse> r2 =
         makeRequest("/talos/fugazi/Patient/m8", "not-a-valid-key");
     assertThat(r2.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    assertThat(r2.getBody().error()).isEqualTo("Unauthorized");
   }
 }
