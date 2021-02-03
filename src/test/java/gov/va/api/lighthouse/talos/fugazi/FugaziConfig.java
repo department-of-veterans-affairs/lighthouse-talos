@@ -26,7 +26,8 @@ public class FugaziConfig {
             .clientKeys(List.of("shanktopus"))
             .unauthorizedResponse(unauthorizedAsJson(unauthorizedPayload()))
             .build());
-    protectedEndpoint.addUrlPatterns("/fugazi/Patient/*");
+    protectedEndpoint.setOrder(1);
+    protectedEndpoint.addUrlPatterns("/fugazi/Patient/*", "/talos/fugazi/Patient/*");
     log.info("Client-key filter initialized");
     return protectedEndpoint;
   }
@@ -36,6 +37,7 @@ public class FugaziConfig {
     var registration = new FilterRegistrationBean<PathRewriteFilter>();
     PathRewriteFilter filter = PathRewriteFilter.builder().removeLeadingPath("/talos/").build();
     registration.setFilter(filter);
+    registration.setOrder(2);
     registration.addUrlPatterns(filter.removeLeadingPathsAsUrlPatterns());
     log.info("PathRewrite filter initialized");
     return registration;
