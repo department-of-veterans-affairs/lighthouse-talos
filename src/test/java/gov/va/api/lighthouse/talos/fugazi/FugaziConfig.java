@@ -3,8 +3,8 @@ package gov.va.api.lighthouse.talos.fugazi;
 import static gov.va.api.lighthouse.talos.Responses.unauthorizedAsJson;
 
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
-import gov.va.api.health.autoconfig.rest.PathRewriteFilter;
 import gov.va.api.lighthouse.talos.ClientKeyProtectedEndpointFilter;
+import gov.va.api.lighthouse.talos.PathRewriteFilter;
 import java.util.List;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

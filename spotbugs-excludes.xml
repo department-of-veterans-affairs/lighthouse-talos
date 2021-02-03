@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FindBugsFilter>
 <!-- Exclusions can be defined here and should include a comment on why the finding can be ignored -->
+    <!--
+  False positive. The filter is not using "user" provided data to determine the filter location.
+  It's using application configuration which strips know path elements, e.g. The application is
+  configured such that /kill/me/ok is stripped to just /ok. The user cannot control this.
+  -->
+    <Match>
+        <Class name="gov.va.api.lighthouse.talos.PathRewriteFilter"/>
+        <Bug pattern="REQUESTDISPATCHER_FILE_DISCLOSURE"/>
+    </Match>
 </FindBugsFilter>
