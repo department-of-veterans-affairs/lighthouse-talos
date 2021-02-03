@@ -28,19 +28,6 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 public class AppliedFiltersTest {
   @Autowired TestRestTemplate restTemplate;
 
-  @Test
-  void filterApplied() {
-    ResponseEntity<FugaziRestController.FugaziResponse> testResponse =
-        makeRequest("/fugazi/Patient/m8", "shanktopus");
-    assertThat(testResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(testResponse.getBody().message()).isEqualTo("Hello m8");
-
-    ResponseEntity<FugaziRestController.FugaziResponse> testResponse2 =
-        makeRequest("/talos/fugazi/Patient/m8", "shanktopus");
-    assertThat(testResponse2.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(testResponse2.getBody().message()).isEqualTo("Hello m8");
-  }
-
   @SneakyThrows
   ResponseEntity<FugaziRestController.FugaziResponse> makeRequest(String url, String clientKey) {
     RequestEntity<Void> request =
@@ -48,6 +35,23 @@ public class AppliedFiltersTest {
     ResponseEntity<FugaziRestController.FugaziResponse> testResponse =
         restTemplate.exchange(request, FugaziRestController.FugaziResponse.class);
     return testResponse;
+  }
+
+  @Test
+  void multipleFiltersApplied() {
+    ResponseEntity<FugaziRestController.FugaziResponse> r1 =
+        makeRequest("/fugazi/Patient/m8", "shanktopus");
+    assertThat(r1.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(r1.getBody().message()).isEqualTo("Hello m8");
+
+    ResponseEntity<FugaziRestController.FugaziResponse> r2 =
+        makeRequest("/talos/fugazi/Patient/m8", "shanktopus");
+    assertThat(r2.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(r2.getBody().message()).isEqualTo("Hello m8");
+
+    ResponseEntity<FugaziRestController.FugaziResponse> r3 =
+        makeRequest("/talos/fugazi/Patient/m8", "not-a-valid-key");
+    assertThat(r3.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
   }
 
   @Test
