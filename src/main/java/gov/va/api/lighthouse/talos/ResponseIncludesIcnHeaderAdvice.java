@@ -26,7 +26,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
  * Patient Matching.
  */
 @Builder
-public final class IncludesIcnHeaderAdvice<T, B> implements ResponseBodyAdvice<Object> {
+public final class ResponseIncludesIcnHeaderAdvice<T, B> implements ResponseBodyAdvice<Object> {
   public static final String INCLUDES_ICN_HEADER = "X-VA-INCLUDES-ICN";
 
   private final Class<T> type;

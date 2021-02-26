@@ -21,11 +21,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-public class IncludesIcnHeaderAdviceTest {
+public class ResponseIncludesIcnHeaderAdviceTest {
   @Test
   public void addHeaderForNoPatients() {
     HttpServletResponse mockResponse = mock(HttpServletResponse.class);
-    IncludesIcnHeaderAdvice.addHeaderForNoPatients(mockResponse);
+    ResponseIncludesIcnHeaderAdvice.addHeaderForNoPatients(mockResponse);
     verify(mockResponse, Mockito.atLeastOnce()).getHeader("X-VA-INCLUDES-ICN");
     verify(mockResponse).addHeader("X-VA-INCLUDES-ICN", "NONE");
     verifyNoMoreInteractions(mockResponse);
@@ -34,7 +34,7 @@ public class IncludesIcnHeaderAdviceTest {
   @Test
   public void addHeaderForPatients() {
     HttpServletResponse mockResponse = mock(HttpServletResponse.class);
-    IncludesIcnHeaderAdvice.addHeader(mockResponse, "a,b,c");
+    ResponseIncludesIcnHeaderAdvice.addHeader(mockResponse, "a,b,c");
     verify(mockResponse, Mockito.atLeastOnce()).getHeader("X-VA-INCLUDES-ICN");
     verify(mockResponse).addHeader("X-VA-INCLUDES-ICN", "a,b,c");
     verifyNoMoreInteractions(mockResponse);
@@ -136,7 +136,7 @@ public class IncludesIcnHeaderAdviceTest {
   public static final class FakeMajg implements ResponseBodyAdvice<Object> {
     @Delegate
     private final ResponseBodyAdvice<Object> delegate =
-        IncludesIcnHeaderAdvice.<FakeResource, FakeBundle>builder()
+        ResponseIncludesIcnHeaderAdvice.<FakeResource, FakeBundle>builder()
             .type(FakeResource.class)
             .bundleType(FakeBundle.class)
             .extractResources(bundle -> bundle.entry().stream().map(FakeEntry::resource))
@@ -148,27 +148,17 @@ public class IncludesIcnHeaderAdviceTest {
   @Builder
   static final class FakeResource {
     String id;
-
-    String implicitRules;
-
-    String language;
-
-    String meta;
   }
 
   @Data
   @Builder
   static final class FakeEntry {
-    String url;
-
     FakeResource resource;
   }
 
   @Data
   @Builder
   static final class FakeBundle {
-    Integer total;
-
     List<FakeEntry> entry;
   }
 }
