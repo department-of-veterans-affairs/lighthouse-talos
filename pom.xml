@@ -11,7 +11,7 @@
   <version>0.0.4-SNAPSHOT</version>
   <packaging>jar</packaging>
   <properties>
-    <jacoco.coverage>0.91</jacoco.coverage>
+    <jacoco.coverage>0.93</jacoco.coverage>
   </properties>
   <dependencies>
     <dependency>
