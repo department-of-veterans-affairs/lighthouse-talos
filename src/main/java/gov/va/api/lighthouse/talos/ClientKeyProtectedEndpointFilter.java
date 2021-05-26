@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Singular;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -21,7 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class ClientKeyProtectedEndpointFilter extends OncePerRequestFilter {
   @Builder.Default private final String clientKeyHeader = "client-key";
 
-  @Singular private final List<String> clientKeys;
+  private final List<String> clientKeys;
 
   @NonNull private final Consumer<HttpServletResponse> unauthorizedResponse;
 

@@ -35,7 +35,8 @@ public class FugaziConfig {
   @Bean
   FilterRegistrationBean<PathRewriteFilter> pathRewriteFilter() {
     var registration = new FilterRegistrationBean<PathRewriteFilter>();
-    PathRewriteFilter filter = PathRewriteFilter.builder().removeLeadingPath("/talos/").build();
+    PathRewriteFilter filter =
+        PathRewriteFilter.builder().removeLeadingPath(List.of("/talos/")).build();
     registration.setFilter(filter);
     registration.setOrder(2);
     registration.addUrlPatterns(filter.removeLeadingPathsAsUrlPatterns());

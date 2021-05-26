@@ -2,8 +2,11 @@ package gov.va.api.lighthouse.talos;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
+import java.util.List;
 import javax.servlet.FilterChain;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +33,7 @@ class PathRewriteFilterTest {
     when(request.getRequestURI()).thenReturn("/killme/ok");
     when(request.getRequestDispatcher(anyString())).thenReturn(dispatcher);
 
-    var filter = PathRewriteFilter.builder().removeLeadingPath("/killme/").build();
+    var filter = PathRewriteFilter.builder().removeLeadingPath(List.of("/killme/")).build();
     filter.doFilter(request, response, chain);
     verify(request).getRequestDispatcher("/ok");
     verifyNoInteractions(chain);
@@ -42,8 +45,7 @@ class PathRewriteFilterTest {
         IllegalArgumentException.class,
         () ->
             gov.va.api.health.autoconfig.rest.PathRewriteFilter.builder()
-                .removeLeadingPath("/ok/")
-                .removeLeadingPath("/nah")
+                .removeLeadingPath(List.of("/ok/", "/nah"))
                 .build());
   }
 
@@ -52,7 +54,7 @@ class PathRewriteFilterTest {
   void nonMatchingPathIsNotStripped() {
     when(request.getRequestURI()).thenReturn("/ok");
 
-    var filter = PathRewriteFilter.builder().removeLeadingPath("/killme/").build();
+    var filter = PathRewriteFilter.builder().removeLeadingPath(List.of("/killme/")).build();
     filter.doFilter(request, response, chain);
     verifyNoInteractions(dispatcher);
     verify(chain).doFilter(request, response);
