@@ -8,7 +8,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.Builder;
-import lombok.Singular;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
@@ -42,7 +41,7 @@ public class PathRewriteFilter extends OncePerRequestFilter {
 
   /** Create a new instance that enforces paths end with a /. */
   @Builder
-  public PathRewriteFilter(@Singular("removeLeadingPath") List<String> removeLeadingPath) {
+  public PathRewriteFilter(List<String> removeLeadingPath) {
     this.removeLeadingPath = removeLeadingPath == null ? List.of() : removeLeadingPath;
     for (String prefix : this.removeLeadingPath) {
       if (!prefix.endsWith("/")) {
